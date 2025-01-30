@@ -2,6 +2,7 @@
 
 // Import de la feuille de style
 import '../assets/css/style.css';
+import { PostIt } from './PostIt';
 
 // La class n'est pas exportée, ce qui empêche de l'importer et de l'instancier
 // C'est l'équivalent du constructeur privé en PHP
@@ -28,6 +29,15 @@ class App {
 
         // rendu de l'interface Utilisateur
         this.renderBaseUI();
+
+        // TEST
+        const pTest = new PostIt({
+            title: 'Toto à la plage',
+            content: 'Il nage le crawl au milieu des requins',
+            dateCreate: 1666180099794,
+            dateUpdate: 1666180099794
+        })
+        this.elOlPiList.append( pTest.getDOM() );
     }
 
     /**
