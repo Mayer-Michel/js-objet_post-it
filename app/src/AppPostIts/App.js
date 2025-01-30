@@ -101,7 +101,12 @@ class App {
         // -- <main>
         const elMain = document.createElement( 'main' );
 
-        // TODO: L'intérieur
+        // - <ol id="nota-list"></ol>
+        this.elOlPiList = document.createElement( 'ol' );
+        this.elOlPiList.id = 'nota-list';
+
+        // Injection <ol> dans <main>
+        elMain.append( this.elOlPiList );
 
         //  -- Injection <header>+<main> dans <body>
         document.body.append( elHeader, elMain );
