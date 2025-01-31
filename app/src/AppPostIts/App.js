@@ -220,7 +220,11 @@ class App {
      * @param {Event} evt Evénement produir intercepté par l'écouteur 
      */
     handlerClear( evt ){
-        // TODO: Le code 
+        // 1 - Vider le tableau de la liste des Post-Its
+        this.arrPostIt = [];
+
+        // 2 - Regéner la liste à l'affichage
+        this.renderList();
     }
 
 }
