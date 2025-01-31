@@ -25,7 +25,9 @@ export class PostIt{
     }
 
     /**
+     * Créé de le DOM pour un Post-It
      * 
+     * @returns {HTMLElement} Elément DOM conteneur du Post-It
      */
     getDOM(){
         /* 
@@ -78,8 +80,11 @@ export class PostIt{
        innerDom += '</div>';
        innerDom += `<div class="nota-title">${this.title}</div>`;
        innerDom += `<div class="nota-content">${this.content}</div>`;
-        // 
+        // Ajout du contenu 
        elLi.innerHTML = innerDom;
+
+       //Ecouteur du click
+       elLi.addEventListener( 'click', this.handlerButtons.bind(this) );    
 
        return elLi
     }
@@ -95,5 +100,14 @@ export class PostIt{
             dateCreate: this.dateCreate,
             dateUpdate: this.dateUpdate
         }
+    }
+
+    /**
+     * Gestionnaire des bouttons du post-it
+     * 
+     * @param {Event} evt 
+     */
+    handlerButtons( evt ){
+        console.log(evt);
     }
 }

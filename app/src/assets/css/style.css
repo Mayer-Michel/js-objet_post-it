@@ -24,6 +24,11 @@ body {
 :focus {
     outline: 2px solid #0a0;
 }
+
+.error {
+    background-color: #f66;
+}
+
 input,
 textarea {
     border-radius: 2px;

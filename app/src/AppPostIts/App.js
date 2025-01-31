@@ -22,6 +22,11 @@ class App {
     elOlPiList;
 
     /**
+     * Tableau de travail contenant la liste réelle des Post-Its
+     */
+    arrPostIt = [];
+
+    /**
      * Démarreur de l'application
      */
     start(){
@@ -78,10 +83,12 @@ class App {
         this.elInputNewPiTitle = document.createElement( 'input' );
         this.elInputNewPiTitle.type = 'text';
         this.elInputNewPiTitle.placeholder = 'Titre';
+        this.elInputNewPiTitle.addEventListener( 'focus', this.handlerRemoveError.bind( this ) );
  
         // <textarea placeholder="Contenu"></textarea>
         this.elTextareaNewPiContent = document.createElement( 'textarea' );
         this.elTextareaNewPiContent.placeholder = 'Contenu';
+        this.elTextareaNewPiContent.addEventListener( 'focus', this.handlerRemoveError.bind( this ) );
 
         // <button type="button">⊕</button>
         const elBtnNewPiAdd = document.createElement( 'button' );
@@ -123,12 +130,88 @@ class App {
     }
 
     /**
+     * Effectue le rendu de a liste des Post-Its
+     */
+    renderList(){
+        // 1 - Vider le <ol> de la liste
+        this.elOlPiList.innerHTML = '';
+
+        // 2 - Reconstruire la liste à partir du Tableau de Post-Its
+        // for( let postIt of this.arrPostIt ){
+        //     let elPostIt = postIt.getDOM();
+        //     this.elPostIt.append( elPostIt );
+        // }
+        // Version Senior dev
+        for( let postIt of this.arrPostIt ) 
+            this.elOlPiList.append( postIt.getDOM() );
+    }
+
+    /**
      * Gestionnaire d'ajout d'un nouveau Post-It
      * 
      * @param {Event} evt Evénement produit intercepté par l'écouteur 
      */
     handlerAddNewPostIt( evt ){
-        // TODO: Le code
+        // Récupérer la saisie 
+        let newTitle = this.elInputNewPiTitle.value;
+        let newContent = this.elTextareaNewPiContent.value;
+        let now = Date.now();
+        
+        // Vérifier la saisie
+        // "Flag" => drapeau qui indique la présence d'une erreur
+        let hasError = false;
+
+        // \S == autre chose que des espaces ou rien
+        const regExpNotEmty = new RegExp( '\\S' ); // '\\S' == /\S/ 
+        // Si newTitle ne passe pas le test
+        if( !regExpNotEmty.test( newTitle) ){
+            hasError = true;
+            this.elInputNewPiTitle.value = '';
+            this.elInputNewPiTitle.classList.add( 'error' );
+        }
+
+        // Si newContent ne passe pas le test
+        if( !regExpNotEmty.test( newContent) ){
+            hasError = true;
+            this.elTextareaNewPiContent.value = '';
+            this.elTextareaNewPiContent.classList.add( 'error' );
+        }
+
+        // Si il y a eu une erreur, on arrête ici
+        if( hasError ) return;
+        
+        // 1 - Créer une version litérale du Post-It avec des données du formulaire
+        const newPostItLiteral = {
+            title: newTitle,
+            content: newContent,
+            dateCreate: now,
+            dateUpdate: now
+        };
+
+        // 2 - Créer une instance de la classe Post-Its
+        const newPostIt = new PostIt( newPostItLiteral );
+
+        // 3 - Ajoute l'instance au tableau de travail 
+        this.arrPostIt.unshift( newPostIt );
+
+        // 4 - Reconstruit le contenu de la liste
+        this.renderList();
+
+        // 5 - Vider les champs du formulaire
+        this.elInputNewPiTitle.value = '';
+        this.elTextareaNewPiContent.value = '';
+    }
+
+    /**
+     * Gestionnaire de suppresion de l'état "erreur" d'un champ de formulaire
+     * 
+     * @param {Event} evt 
+     */
+    handlerRemoveError( evt ){
+        // Récupérer le champ concerné
+        let elField = evt.target;
+
+        elField.classList.remove( 'error' );
     }
 
     /**
