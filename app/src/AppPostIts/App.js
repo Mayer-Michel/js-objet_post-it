@@ -78,17 +78,20 @@ class App {
         // - <form novalidate>
         const elForm = document.createElement( 'form' );
         elForm.noValidate = true;
+        elForm.addEventListener( 'submit', this.handlerAddNewPostIt.bind(this) );
 
         // <input type="text" placeholder="Titre">
         this.elInputNewPiTitle = document.createElement( 'input' );
         this.elInputNewPiTitle.type = 'text';
         this.elInputNewPiTitle.placeholder = 'Titre';
         this.elInputNewPiTitle.addEventListener( 'focus', this.handlerRemoveError.bind( this ) );
+        this.elInputNewPiTitle.addEventListener( 'input', this.handlerRemoveError.bind( this ) );
  
         // <textarea placeholder="Contenu"></textarea>
         this.elTextareaNewPiContent = document.createElement( 'textarea' );
         this.elTextareaNewPiContent.placeholder = 'Contenu';
         this.elTextareaNewPiContent.addEventListener( 'focus', this.handlerRemoveError.bind( this ) );
+        this.elTextareaNewPiContent.addEventListener( 'input', this.handlerRemoveError.bind( this ) );
 
         // <button type="button">⊕</button>
         const elBtnNewPiAdd = document.createElement( 'button' );
@@ -152,6 +155,9 @@ class App {
      * @param {Event} evt Evénement produit intercepté par l'écouteur 
      */
     handlerAddNewPostIt( evt ){
+        // Annuler le comportement par défaut de l'événement (utile pour bloquer l'envoi de "submit")
+        evt.preventDefault();
+
         // Récupérer la saisie 
         let newTitle = this.elInputNewPiTitle.value;
         let newContent = this.elTextareaNewPiContent.value;
