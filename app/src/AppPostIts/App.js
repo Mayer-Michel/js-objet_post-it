@@ -27,6 +27,11 @@ class App {
     arrPostIt = [];
 
     /**
+     * Données d'un post-it avant édition
+     */
+    backupPostItData = null;
+
+    /**
      * Démarreur de l'application
      */
     start(){
@@ -43,8 +48,15 @@ class App {
      * Initialise les écouteurs des évènements emis par les Post-Its
      */
     initPostItListeners() {
+        // Edition
+        document.addEventListener('pi.edit', this.handlerOnPiEdit.bind(this));
         // Supression d'un Post-It
         document.addEventListener('pi.delete', this.handlerOnPiDelete.bind(this));
+        // Sauvegarde
+        document.addEventListener('pi.save', this.handlerOnPiSave.bind(this));
+        // Annulation
+        document.addEventListener('pi.cancel', this.handlerOnPiCancel.bind(this));
+        
     }
 
     /**
@@ -234,12 +246,52 @@ class App {
         // 2 - Regéner la liste à l'affichage
         this.renderList();
     }
+    
+    /**
+     * Gestionnaire de sauvegarde d'un Post-It
+     * 
+     * @param {CustomEvent} evt 
+     */
+    handlerOnPiSave( evt ) {
+        const postIt = evt.detail.emitter;
+    }
+
+    /**
+     * Gestionnaire d'annulation d'un Post-It
+     * 
+     * @param {CustomEvent} evt 
+     */
+    handlerOnPiCancel( evt ) {
+        const postIt = evt.detail.emitter;
+    }
+
+    /**
+     * Gestionnaire d'édition d'un Post-It
+     * 
+     * @param {CustomEvent} evt 
+     */
+    handlerOnPiEdit( evt ) {
+        // Si  on est déjà en train d'éditer un post-it, on restort
+        if( this.backupPostItData !== null ) return;
+
+        const postIt = evt.detail.emitter;
+
+        // On crée une copie des données du post-it en cas d'annulation
+        this.backupPostItData = postIt.toJSON();
+        
+        // Passage en mode edition
+        postIt.setEditMode();
+    }
+
     /**
      * Gestionnaire de suppression d'un Post-It
      * 
      * @param {CustomEvent} evt 
      */
     handlerOnPiDelete( evt ) {
+        // Si  on est déjà en train d'éditer un post-it, on restort
+        if( this.backupPostItData !== null ) return;
+
         const postIt = evt.detail.emitter;
         // Array filter retourne un tableau des Post-It sans celui que l'on veut supprimer 
         const arrListAfterDelete = this.arrPostIt.filter( pi => ! Object.is( postIt, pi ));
@@ -248,6 +300,8 @@ class App {
         // On refait l'affichage
         this.renderList();
     }
+
+
 
 }
 

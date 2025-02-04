@@ -12,11 +12,39 @@ const MODE_EDIT = 'edit';
 */
 export class PostIt{
 
+    /**
+     * données : Titre
+     */
     title;
+    /**
+     * donées : Contenu
+     */
     content;
+    /**
+     * Données : TimeStamp JS de création
+     */
     dateCreate;
+    /**
+     * Donées : TimeStamp JS de modification
+     */
     dateUpdate;
+    /**
+     * Objet de detail ajouté aux évenements émsis par les actions
+     */
     eventDetail;
+    /**
+     * Élément DOM de Post-It
+     */
+    container = null;
+
+    /**
+     * Elément DOM du titre du post-it
+     */
+    containerTitle = null;
+    /**
+     * Elément DOM du content du post-it
+     */
+    containerContent = null;
 
     constructor( postIdLiteral ){
         this.title = postIdLiteral.title;
@@ -34,6 +62,10 @@ export class PostIt{
      * @returns {HTMLElement} Elément DOM conteneur du Post-It
      */
     getDOM(){
+        // S'il a déjà été créé, on le retourne 
+        if( this.container !== null ) return this.container;
+
+        // Sinon on fabrique le DOM
         /* 
         Template :
         <li>
@@ -57,9 +89,9 @@ export class PostIt{
             <div class="nota-content">THE_CONTENT</div>
         </li>
         */
-       const elLi = document.createElement( 'li' );
-       elLi.classList.add( 'nota' );
-       elLi.dataset.mode = MODE_VIEW;
+       this.container = document.createElement( 'li' );
+       this.container.classList.add( 'nota' );
+       this.container.dataset.mode = MODE_VIEW;
 
        // Dates formatées
        let dateCreate = new Date( this.dateCreate ).toLocaleString();
@@ -82,22 +114,52 @@ export class PostIt{
        innerDom += '        </div>';
        innerDom += '    </div>';
        innerDom += '</div>';
-       innerDom += `<div class="nota-title">${this.title}</div>`;
-       innerDom += `<div class="nota-content">${this.content}</div>`;
         // Ajout du contenu 
-       elLi.innerHTML = innerDom;
+       this.container.innerHTML = innerDom;
+
+       // <div class="nota-title">
+       this.containerTitle = document.createElement( 'div' );
+       this.containerTitle.classList.add( 'nota-title' );
+       this.containerTitle.textContent = this.title;
+       
+       // <div class="nota-content">
+       this.containerContent = document.createElement( 'div' );
+       this.containerContent.classList.add( 'nota-content' );
+       this.containerContent.textContent = this.content;
+
+       //  
+       this.container.append( this.containerTitle, this.containerContent );
 
        //Ecouteur du click
-       elLi.addEventListener( 'click', this.handlerButtons.bind(this) );    
+       this.container.addEventListener( 'click', this.handlerButtons.bind(this) );    
 
-       return elLi
+       return this.container
+    }
+
+    /**
+     * Passe le DOM du Post-It en mode édition
+     */
+    setEditMode(){
+        this.container.dataset.mode = MODE_EDIT;
+        this.containerTitle.contentEditable = true;
+        this.containerContent.contentEditable = true;
+    }
+
+    /**
+     * Passe le DOM du Post-It en mode view
+     */
+    setViewMode(){
+        this.container.dataset.mode = MODE_VIEW;
+        this.containerTitle.contentEditable = false;
+        this.containerContent.contentEditable = false;
     }
 
     /**
      * Action du bouton d'édition
      */
     commandEdit(){
-        console.log( 'Edition...' );
+        const editEvent  = new CustomEvent( 'pi.edit', this.eventDetail );
+        document.dispatchEvent( editEvent );
     }
 
      /**
@@ -112,14 +174,16 @@ export class PostIt{
      * Action du bouton de sauvgarde
      */
     commandSave(){
-        console.log( 'Sauvegarde...' );
+        const saveEvent  = new CustomEvent( 'pi.save', this.eventDetail );
+        document.dispatchEvent( saveEvent );
     }
 
      /**
      * Action du bouton d'annulation
      */
     commandCancel(){
-        console.log( 'Annulation...' );
+        const cancelEvent  = new CustomEvent( 'pi.cancel', this.eventDetail );
+        document.dispatchEvent( cancelEvent );
     }
 
     /**
@@ -163,7 +227,7 @@ export class PostIt{
                 break;
 
             default:
-                console.log( elTarget );
+                break;
         }
     }
 }
