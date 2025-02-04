@@ -126,8 +126,8 @@ main {
 .nota-content {
     flex-grow: 1;
 }
-.nota-title[contenteditable],
-.nota-content[contenteditable] {
+.nota-title[contenteditable = "true"],
+.nota-content[contenteditable = "true"] {
     border: 1px solid #666;
     border-radius: 2px;
 }

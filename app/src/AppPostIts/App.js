@@ -263,6 +263,16 @@ class App {
      */
     handlerOnPiCancel( evt ) {
         const postIt = evt.detail.emitter;
+        
+        // Passage en mode vue du post-it
+        postIt.setViewMode();
+
+        // On remet les données depuis le backup
+        postIt.containerTitle.textContent = this.backupPostItData.title;
+        postIt.containerContent.textContent = this.backupPostItData.content;
+
+        // On réintialise le backup
+        this.backupPostItData = null;
     }
 
     /**
