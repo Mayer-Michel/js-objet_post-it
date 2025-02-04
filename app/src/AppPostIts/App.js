@@ -35,14 +35,16 @@ class App {
         // rendu de l'interface Utilisateur
         this.renderBaseUI();
 
-        // TEST
-        const pTest = new PostIt({
-            title: 'Toto à la plage',
-            content: 'Il nage le crawl au milieu des requins',
-            dateCreate: 1666180099794,
-            dateUpdate: 1666180099794
-        })
-        this.elOlPiList.append( pTest.getDOM() );
+        // Pose des des écouteurs de post-its
+        this.initPostItListeners();  
+    }
+
+    /**
+     * Initialise les écouteurs des évènements emis par les Post-Its
+     */
+    initPostItListeners() {
+        // Supression d'un Post-It
+        document.addEventListener('pi.delete', this.handlerOnPiDelete.bind(this));
     }
 
     /**
@@ -58,7 +60,7 @@ class App {
             <form novalidate>
                 <input type:"text" placeholder="Titre">
                 <textarea placeholder="Contenu"></textarea>
-                <button type="button">⊕</button>
+                <button type="button">➕</button>
             </form>
 
             <div>
@@ -93,10 +95,10 @@ class App {
         this.elTextareaNewPiContent.addEventListener( 'focus', this.handlerRemoveError.bind( this ) );
         this.elTextareaNewPiContent.addEventListener( 'input', this.handlerRemoveError.bind( this ) );
 
-        // <button type="button">⊕</button>
+        // <button type="button">➕</button>
         const elBtnNewPiAdd = document.createElement( 'button' );
         elBtnNewPiAdd.type = 'button';
-        elBtnNewPiAdd.textContent = '⊕';
+        elBtnNewPiAdd.textContent = '➕';
         // .bind( this ) permet de faire en sorte que le contexte du handler soit toujours App (au lieu du boutton)
         elBtnNewPiAdd.addEventListener( 'click', this.handlerAddNewPostIt.bind( this ) );
 
@@ -230,6 +232,20 @@ class App {
         this.arrPostIt = [];
 
         // 2 - Regéner la liste à l'affichage
+        this.renderList();
+    }
+    /**
+     * Gestionnaire de suppression d'un Post-It
+     * 
+     * @param {CustomEvent} evt 
+     */
+    handlerOnPiDelete( evt ) {
+        const postIt = evt.detail.emitter;
+        // Array filter retourne un tableau des Post-It sans celui que l'on veut supprimer 
+        const arrListAfterDelete = this.arrPostIt.filter( pi => ! Object.is( postIt, pi ));
+        // On réaffecte le tableau de Post-it avec ce nouveau tableau
+        this.arrPostIt = arrListAfterDelete;
+        // On refait l'affichage
         this.renderList();
     }
 

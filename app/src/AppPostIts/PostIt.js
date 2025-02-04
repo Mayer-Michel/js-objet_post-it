@@ -16,12 +16,16 @@ export class PostIt{
     content;
     dateCreate;
     dateUpdate;
+    eventDetail;
 
     constructor( postIdLiteral ){
         this.title = postIdLiteral.title;
         this.content = postIdLiteral.content;
         this.dateCreate = postIdLiteral.dateCreate;
         this.dateUpdate = postIdLiteral.dateUpdate;
+
+        // Objet "detail" pour l'événement personnalisé des actions sut le post-it
+        this.eventDetail =  { detail: { emitter: this }}; 
     }
 
     /**
@@ -90,6 +94,35 @@ export class PostIt{
     }
 
     /**
+     * Action du bouton d'édition
+     */
+    commandEdit(){
+        console.log( 'Edition...' );
+    }
+
+     /**
+     * Action du bouton de suppression
+     */
+    commandDelete(){
+        const deleteEvent  = new CustomEvent( 'pi.delete', this.eventDetail );
+        document.dispatchEvent( deleteEvent );
+    }
+
+     /**
+     * Action du bouton de sauvgarde
+     */
+    commandSave(){
+        console.log( 'Sauvegarde...' );
+    }
+
+     /**
+     * Action du bouton d'annulation
+     */
+    commandCancel(){
+        console.log( 'Annulation...' );
+    }
+
+    /**
      * Donne la forme que doit avoir le post-it en literal ( utilisé par JSON.stringify() )
      * @returns Forme literale du Post-It
      */
@@ -108,6 +141,29 @@ export class PostIt{
      * @param {Event} evt 
      */
     handlerButtons( evt ){
-        console.log(evt);
+        const elTarget = evt.target;
+        const role = elTarget.dataset.role;
+
+        // En fonction du role, on fait des choses différentes
+        switch( role ){
+            case 'delete':
+                this.commandDelete();
+                break;
+                
+            case 'save':
+                this.commandSave();
+                break;
+
+            case 'cancel':
+                this.commandCancel();
+                break;
+
+            case 'edit':
+                this.commandEdit();
+                break;
+
+            default:
+                console.log( elTarget );
+        }
     }
 }
